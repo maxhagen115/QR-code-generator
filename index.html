@@ -22,83 +22,111 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="js/translations.js"></script>
     <script src="js/script.js" defer></script>
     <style>
-      #spinner {
-        display: none;
+      #qrcode {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100%;
+      }
+      #qrcode img {
+        display: block;
+        object-fit: contain;
       }
     </style>
     <title>QR Code gen</title>
   </head>
-  <body>
-    <header class="bg-gradient-to-r from-purple-500 to-indigo-500 p-6 text-white">
-      <div class="max-w-5xl mx-auto text-2xl font-bold">🎉 QR Code Gen</div>
+  <body class="h-screen overflow-hidden flex flex-col">
+    <header class="bg-gray-50 border-b border-gray-200 p-4 flex-shrink-0">
+      <div class="max-w-5xl mx-auto flex justify-between items-center">
+        <div class="text-xl md:text-2xl font-bold text-gray-900" data-i18n="header.title">QR Code Generator</div>
+        <button id="language-switch" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium px-4 py-2 rounded-lg transition text-sm md:text-base">
+          <span id="lang-display">NL</span> / <span id="lang-alt">EN</span>
+        </button>
+      </div>
     </header>
 
-    <main class="bg-blue-50 min-h-screen py-10">
-      <div class="flex flex-col md:flex-row gap-10 max-w-4xl mx-auto px-6">
-        <!-- Left Side -->
-        <div class="w-full md:w-2/3">
-          <h1 class="text-4xl font-extrabold text-indigo-700 mb-4">Maak een QR code!</h1>
-          <p class="text-indigo-600 mb-2">
-            Snel en makkelijk: vul een URL in, kies je formaat en download je QR code als afbeelding.
-          </p>
-          <form id="generate-form" class="bg-white p-6 rounded-xl shadow-xl">
-            <input
-              id="url"
-              placeholder="https://voorbeeld.nl"
-              class="w-full border-2 border-indigo-300 rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-            <select
-              id="size"
-              class="w-full border-2 border-indigo-300 rounded-lg p-3 mb-4"
-            >
-              <option value="100">100x100</option>
-              <option value="200">200x200</option>
-              <option value="300" selected>300x300</option>
-              <option value="400">400x400</option>
-              <option value="500">500x500</option>
-              <option value="600">600x600</option>
-              <option value="700">700x700</option>
-            </select>
-            <button
-              class="bg-purple-600 hover:bg-purple-700 text-white font-bold w-full py-3 rounded-lg transition"
-              type="submit"
-            >
-              🚀 Genereer QR Code
-            </button>
-          </form>
-
-          <!-- Spinner & QR Output -->
-          <div id="gegenereerd" class="text-center mt-10">
-            <!-- Spinner -->
-            <div id="spinner" role="status">
-              <svg
-                class="inline mr-2 w-20 h-20 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+    <main class="bg-white flex-1 overflow-y-auto flex flex-col items-center py-6">
+      <div class="flex justify-center mb-6 md:mb-8">
+        <img src="img/qr-code.svg" class="w-40 h-40 md:w-48 md:h-48 opacity-80" alt="QR Code Illustration" />
+      </div>
+      <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6 md:p-8 max-w-5xl w-full mx-4 md:mx-6 flex-shrink-0 mt-2">
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8">
+          <!-- Left Side -->
+          <div class="w-full md:w-2/3">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 md:mb-5" data-i18n="main.title">Maak een QR code!</h1>
+            <p class="text-gray-600 mb-5 md:mb-6 text-base" data-i18n="main.description">
+              Snel en makkelijk: vul een URL in, kies je formaat en download je QR code als afbeelding.
+            </p>
+            <form id="generate-form" class="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-sm">
+              <input
+                id="url"
+                data-i18n-placeholder="input.url"
+                placeholder="https://voorbeeld.nl"
+                class="w-full border-2 border-gray-300 rounded-lg p-3 md:p-4 mb-4 md:mb-5 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              />
+              <select
+                id="size"
+                class="w-full border-2 border-gray-300 rounded-lg p-3 md:p-4 mb-4 md:mb-5"
               >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
-                />
-              </svg>
-              <span class="sr-only">Laden...</span>
-            </div>
-
-            <!-- QR Code Output -->
-            <div id="qrcode" class="mt-6 flex justify-center"></div>
+                <option value="100">100x100</option>
+                <option value="200">200x200</option>
+                <option value="300" selected>300x300</option>
+                <option value="400">400x400</option>
+                <option value="500">500x500</option>
+                <option value="600">600x600</option>
+                <option value="700">700x700</option>
+              </select>
+              <button
+                class="bg-gray-800 hover:bg-gray-900 text-white font-bold w-full py-4 md:py-5 rounded-lg transition text-base md:text-lg"
+                type="submit"
+                data-i18n="button.generate"
+              >
+                Genereer QR Code
+              </button>
+            </form>
           </div>
-        </div>
 
-        <!-- Right Image -->
-        <div class="w-full md:w-1/3 flex justify-center items-start">
-          <img src="img/qr-code.svg" class="w-2/3 md:w-full" alt="Illustratie QR code" />
+          <!-- Right Side - QR Code Output Area -->
+          <div class="w-full md:w-1/3 flex flex-col items-center">
+            <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-6 md:p-8 w-full min-h-[250px] md:min-h-[300px] flex flex-col items-center justify-center relative overflow-auto">
+              <!-- Spinner -->
+              <div id="spinner" role="status" class="hidden absolute">
+                <svg
+                  class="inline mr-2 w-20 h-20 text-gray-200 animate-spin dark:text-gray-600 fill-gray-800"
+                  viewBox="0 0 100 101"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill"
+                  />
+                </svg>
+                <span class="sr-only" data-i18n="spinner.loading">Laden...</span>
+              </div>
+
+              <!-- QR Code Output -->
+              <div id="qrcode" class="flex justify-center items-center w-full h-full p-2"></div>
+              
+              <!-- Placeholder when no QR code -->
+              <div id="qrcode-placeholder" class="text-center text-gray-400 absolute inset-0 flex flex-col items-center justify-center">
+                <svg class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3 md:mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                </svg>
+                <p class="text-sm md:text-base" data-i18n="placeholder.text">QR code verschijnt hier</p>
+              </div>
+            </div>
+            <!-- Save Button Container (outside the placeholder box) -->
+            <div id="save-button-container" class="w-full mt-4 flex justify-center"></div>
+          </div>
         </div>
       </div>
     </main>
